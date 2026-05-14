@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Brain Superpowers!</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Nunito',system-ui,sans-serif;background:linear-gradient(180deg,#42b8ff,#2457d7 40%,#10164d);color:#fff;min-height:100vh;overflow-x:hidden}
+button{font-family:inherit;cursor:pointer}
+#app{max-width:1100px;margin:0 auto}
+.scr{display:none;min-height:100vh;padding:20px;text-align:center;position:relative;overflow:hidden}
+.scr.on{display:flex;flex-direction:column;align-items:center;justify-content:center}
+#navBtns{position:fixed;top:12px;left:12px;z-index:900;display:flex;gap:6px}
+#trBtns{position:fixed;top:12px;right:12px;z-index:900;display:flex;gap:6px;align-items:center}
+.nb{border-radius:999px;padding:8px 13px;border:2px solid rgba(255,255,255,.4);background:rgba(10,5,40,.78);color:#fff;font-weight:900;font-size:.82rem;backdrop-filter:blur(8px);transition:.15s;white-space:nowrap}
+.nb:hover{background:rgba(255,255,255,.2);transform:scale(1.05)}
+.brain-btn{border-color:#4FC3F7;background:rgba(79,195,247,.16);color:#9be7ff}
+.lab-btn{border-color:#50dc98;background:rgba(80,220,152,.14);color:#a8ffd0}
+/* S1 */
+#s1{background:linear-gradient(180deg,#87CEEB,#5ba3d4 50%,#2e5f8c)}
+.char-row{display:flex;gap:32px;justify-content:center;z-index:2;margin-bottom:8px}
+.char-opt{display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;padding:18px 24px;border-radius:28px;border:3px solid rgba(255,255,255,.3);background:rgba(255,255,255,.18);transition:.2s}
+.char-opt:hover,.char-opt.sel{transform:translateY(-6px) scale(1.05);border-color:#FFE66D;background:rgba(255,230,109,.22)}
+.char-opt svg{width:100px;height:140px}
+.char-lbl{font-size:1rem;font-weight:900;color:#FFE66D}
+.start-box{display:none;flex-direction:column;align-items:center;z-index:2;margin-top:8px}
+.hero-big{width:min(140px,32vw);animation:kidFloat 3s ease-in-out infinite}
+@keyframes kidFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.wonder-box{background:#fff;color:#1d3460;border-radius:24px;padding:11px 18px;font-size:clamp(.95rem,2.8vw,1.4rem);font-weight:900;box-shadow:0 10px 28px rgba(0,0,0,.15);max-width:380px;position:relative;margin-top:6px;line-height:1.3}
+.wonder-box::before{content:'';position:absolute;top:-13px;left:50%;transform:translateX(-50%);border:7px solid transparent;border-bottom-color:#fff}
+.big-title{font-size:clamp(1.8rem,5vw,3.4rem);font-weight:900;color:#FFE66D;text-shadow:0 4px 0 rgba(100,60,0,.28);margin-bottom:7px;line-height:1.05}
+.subtitle{font-size:clamp(.9rem,2vw,1.1rem);color:#f0f6ff;max-width:600px;margin:0 auto 18px;font-weight:800;line-height:1.45}
+.btn-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.big-btn{border:none;border-radius:999px;padding:13px 32px;font-size:1.05rem;font-weight:900;transition:.15s;box-shadow:0 8px 26px rgba(0,0,0,.2)}
+.big-btn:hover{transform:scale(1.06) translateY(-2px)}
+.btn-y{background:linear-gradient(135deg,#FFE66D,#FFB01F);color:#2b1400}
+/* ZOOM */
+#zoomScr{position:fixed;inset:0;z-index:300;background:linear-gradient(180deg,#5bbdee,#1d3b9d 60%,#0b1445);display:none;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:20px;overflow:hidden}
+#zoomScr.on{display:flex}
+#zpOuter{position:relative;width:min(52vw,200px);height:min(68vw,260px);margin:0 auto;transition:transform 3s cubic-bezier(.22,.61,.36,1),opacity 2.8s;transform-origin:50% 13%}
+#zpKid{width:100%;height:100%;position:absolute;top:0;left:0}
+#zpBrainWindow{position:absolute;left:22%;top:8%;width:56%;height:35%;border-radius:50%;overflow:hidden;opacity:0;transition:opacity 1.8s;pointer-events:none;border:4px solid #ff3fa8;box-shadow:0 0 32px 14px rgba(255,50,168,0.95)}
+#zpFullBrain{opacity:0;transform:scale(.4);transition:opacity 1.4s,transform 1.4s cubic-bezier(.22,.61,.36,1);width:min(90vw,560px);margin:0 auto;position:absolute;bottom:14%}
+#zpFullBrain.show{opacity:1;transform:scale(1)}
+.zoom-cap{position:absolute;bottom:4%;left:50%;transform:translateX(-50%);background:rgba(255,255,255,.18);border:2.5px solid rgba(255,255,255,.35);border-radius:26px;padding:13px 20px;font-size:clamp(.95rem,2.4vw,1.45rem);font-weight:900;max-width:640px;width:92%;line-height:1.35}
+/* S2 */
+#s2{background:linear-gradient(180deg,#13266d,#111744)}
+.s2-hud{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.18);border-radius:999px;padding:8px 18px;margin-bottom:14px;flex-wrap:wrap;justify-content:center}
+.sc-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;width:100%;max-width:980px;margin-top:4px}
+@media(max-width:860px){.sc-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:540px){.sc-grid{grid-template-columns:repeat(2,1fr)}}
+.sc-card{background:rgba(255,255,255,.1);border:3px solid rgba(255,255,255,.18);border-radius:26px;padding:14px 12px;transition:.18s;display:flex;flex-direction:column;align-items:center;cursor:pointer;gap:10px;position:relative}
+.sc-card:hover{transform:translateY(-6px) scale(1.04);background:rgba(255,255,255,.18)}
+.sc-card.glow-anim{animation:cardGlow .6s ease-out forwards}
+.sc-card.done{border-color:#F1C40F;background:rgba(255,220,50,.12)}
+.sc-done-badge{position:absolute;top:-8px;right:-8px;width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#FFE66D,#FF9E1F);display:flex;align-items:center;justify-content:center;font-size:1rem;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+@keyframes cardGlow{0%{transform:scale(1)}40%{transform:scale(1.18);box-shadow:0 0 44px 14px rgba(255,230,100,.8)}100%{transform:scale(1)}}
+.sc-icon-box{width:106px;height:106px;border-radius:20px;display:flex;align-items:center;justify-content:center}
+.sc-title{font-size:1rem;font-weight:900;color:#fff}
+.sc-sub{font-size:.74rem;color:#d4e4ff;font-weight:800;text-align:center}
+.bdg{width:38px;height:38px;border-radius:50%;border:2.5px solid rgba(255,255,255,.22);background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-size:1.2rem;transition:.25s}
+.bdg.on{border-color:#F1C40F;background:linear-gradient(135deg,#FFE66D,#FF9E1F);transform:scale(1.15)}
+/* BRAIN TRANS */
+#brainTransScr{position:fixed;inset:0;z-index:310;background:rgba(5,2,30,.97);display:none;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:20px;overflow:hidden}
+#brainTransScr.on{display:flex}
+#btBrainWrap{width:min(88vw,560px);opacity:0;transform:scale(.6) translateY(16px);transition:opacity .7s,transform .8s cubic-bezier(.22,.61,.36,1)}
+#btBrainWrap.show{opacity:1;transform:scale(1) translateY(0)}
+.bt-zone-label{font-size:clamp(1.2rem,3.5vw,2rem);font-weight:900;margin-bottom:14px;opacity:0;transform:translateY(-10px);transition:opacity .6s .5s,transform .6s .5s;min-height:2.5rem}
+.bt-zone-label.show{opacity:1;transform:translateY(0)}
+.bt-cap{position:absolute;bottom:5%;left:50%;transform:translateX(-50%);background:rgba(255,255,255,.16);border:3px solid rgba(255,255,255,.3);border-radius:28px;padding:14px 20px;font-size:clamp(.95rem,2.3vw,1.45rem);font-weight:900;max-width:760px;width:92%;line-height:1.35}
+/* BRAIN MAP OVERLAY */
+#brainMapOv{display:none;position:fixed;inset:0;z-index:400;align-items:center;justify-content:center;overflow-y:auto;padding:60px 12px 12px}
+#brainMapOv.on{display:flex}
+#brainMapOv .ov-bg{position:fixed;inset:0;background:rgba(5,0,30,.9);z-index:-1}
+.bmap-panel{background:linear-gradient(160deg,#1e0a4a,#081b5c);border:3px solid rgba(255,255,255,.2);border-radius:28px;padding:22px 20px;max-width:860px;width:100%;position:relative;margin:auto;box-shadow:0 20px 80px rgba(0,0,0,.44)}
+.bmap-pcls{position:absolute;top:14px;right:14px;width:50px;height:50px;border-radius:50%;border:3px solid rgba(255,255,255,.4);background:rgba(255,255,255,.14);color:#fff;font-size:1.5rem;font-weight:900;z-index:10;transition:.15s}
+.bmap-pcls:hover{background:rgba(255,80,80,.75);border-color:#ff4444;transform:scale(1.12)}
+.bmap-title{font-size:1.3rem;font-weight:900;color:#FFE66D;margin-bottom:6px}
+.bmap-sub{font-size:.82rem;color:#c8deff;margin-bottom:14px}
+/* lobe info cards row */
+.lobe-info-row{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin-top:14px}
+@media(max-width:700px){.lobe-info-row{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:460px){.lobe-info-row{grid-template-columns:repeat(2,1fr)}}
+.lobe-info-card{border-radius:14px;padding:10px 8px;text-align:center;cursor:pointer;transition:.18s;border:2px solid}
+.lobe-info-card:hover{transform:translateY(-4px) scale(1.05)}
+.lobe-info-card .lic-icon{font-size:1.6rem;margin-bottom:4px}
+.lobe-info-card .lic-name{font-size:.82rem;font-weight:900}
+.lobe-info-card .lic-purpose{font-size:.7rem;opacity:.85;margin-top:2px;line-height:1.3}
+/* PANEL */
+.ov{display:none;position:fixed;inset:0;z-index:500;align-items:flex-start;justify-content:center;overflow-y:auto;padding:14px 12px 12px}
+.ov.on{display:flex}
+.ov-bg{position:fixed;inset:0;background:rgba(5,0,30,.9);z-index:-1}
+.panel{background:linear-gradient(160deg,#1e0a4a,#081b5c);border:3px solid;border-radius:28px;padding:20px;max-width:860px;width:100%;position:relative;margin:auto;box-shadow:0 20px 80px rgba(0,0,0,.44);color:#fff}
+.pcls{position:absolute;top:14px;right:14px;width:50px;height:50px;border-radius:50%;border:3px solid rgba(255,255,255,.4);background:rgba(255,255,255,.14);color:#fff;font-size:1.5rem;font-weight:900;z-index:10;transition:.15s}
+.pcls:hover{background:rgba(255,80,80,.75);border-color:#ff4444;transform:scale(1.12)}
+.panel-top{display:grid;grid-template-columns:1.1fr 1fr;gap:16px;margin-bottom:14px;align-items:start;margin-top:4px}
+@media(max-width:600px){.panel-top{grid-template-columns:1fr}}
+.panel-brain-box{background:rgba(255,255,255,.05);border-radius:18px;padding:10px}
+.panel-brain-label{text-align:center;font-size:1rem;font-weight:900;margin-top:6px;padding:6px 12px;border-radius:10px;display:inline-block}
+.panel-info{display:flex;flex-direction:column;gap:10px}
+.panel-char{font-size:2.8rem;line-height:1;animation:bob 3s ease-in-out infinite;text-align:center}
+@keyframes bob{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+.char-tag{display:inline-block;border-radius:999px;padding:4px 13px;font-size:.83rem;font-weight:900;margin-bottom:4px}
+.panel-sentence{font-size:1rem;font-weight:900;line-height:1.4;padding:10px 14px;border-radius:14px;margin-bottom:4px}
+.panel-desc{font-size:.85rem;color:#e4ecff;line-height:1.5}
+.sec-lbl{font-size:.76rem;font-weight:900;text-transform:uppercase;letter-spacing:.07em;color:#8ba3e8;margin-bottom:9px}
+.rl-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:14px}
+@media(max-width:560px){.rl-grid{grid-template-columns:repeat(2,1fr)}}
+.rl-card{background:rgba(255,255,255,.07);border-radius:15px;overflow:hidden}
+.rl-img{height:70px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.07)}
+.rl-body{padding:7px 7px 9px;text-align:center}
+.rl-name{font-size:.81rem;font-weight:900}.rl-desc{font-size:.68rem;color:#c9d8ff;line-height:1.3;margin-top:2px}
+.game-time-banner{display:flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(135deg,rgba(255,230,109,.18),rgba(255,107,181,.18));border:2px solid rgba(255,230,109,.38);border-radius:16px;padding:11px 16px;margin-bottom:12px}
+.gt-i{font-size:1.9rem;animation:gtB 1s ease-in-out infinite}
+@keyframes gtB{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.game-time-banner h3{font-size:1.3rem;font-weight:900;color:#FFE66D}
+.game-wrap{background:rgba(255,255,255,.055);border-radius:20px;padding:20px}
+.game-title{text-align:center;font-size:1.05rem;font-weight:900;margin-bottom:14px;color:#c8deff}
+.game-body{min-height:265px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.gb{background:rgba(255,255,255,.12);border:2.5px solid rgba(255,255,255,.28);border-radius:15px;color:#fff;font-size:1.05rem;font-weight:800;padding:10px 20px;margin:5px;transition:.14s}
+.gb:hover{background:rgba(255,255,255,.22);transform:scale(1.05)}
+.start-btn{font-size:1.3rem;padding:15px 36px;background:rgba(100,200,255,.14);border-color:rgba(100,200,255,.68)}
+.seq-display{font-size:clamp(2rem,5vw,3.2rem);min-height:76px;background:rgba(255,255,255,.09);border-radius:16px;padding:13px 16px;margin-bottom:13px;width:100%;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
+.seq-btns{display:flex;gap:13px;justify-content:center;flex-wrap:wrap;margin-top:4px}
+.sqb{width:80px;height:80px;border-radius:16px;border:2.5px solid rgba(255,255,255,.22);font-size:2.4rem;background:rgba(255,255,255,.09);transition:.13s}
+.sqb:hover{background:rgba(255,255,255,.2);transform:scale(1.07)}
+.sqb:disabled{opacity:.35;transform:none}
+.q-slot{font-size:2rem;opacity:.5;min-width:44px;display:inline-flex;align-items:center;justify-content:center}
+.mgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;width:100%;max-width:410px}
+.mc{aspect-ratio:1;border-radius:13px;border:2.5px solid rgba(255,255,255,.18);background:rgba(255,255,255,.09);display:flex;align-items:center;justify-content:center;font-size:2rem;transition:.2s;cursor:pointer}
+.mc.face-down .cf{visibility:hidden}.mc.flipped{background:rgba(255,255,255,.2);transform:scale(1.04)}.mc.matched{background:rgba(80,220,100,.28);border-color:#50dc64;pointer-events:none}
+.touch-emoji{font-size:6.5rem;width:140px;height:140px;background:rgba(255,255,255,.08);border-radius:22px;display:flex;align-items:center;justify-content:center;margin-bottom:13px;border:2px solid rgba(255,255,255,.13)}
+.tbtns{display:flex;gap:13px;justify-content:center;flex-wrap:wrap}
+.tbtn{font-size:1rem;padding:12px 24px;border-radius:16px;border:2.5px solid rgba(255,255,255,.28);background:rgba(255,255,255,.1);color:#fff;font-weight:800;transition:.14s}
+.tbtn:hover{background:rgba(255,255,255,.2);transform:scale(1.05)}
+.spygrid{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;width:100%;max-width:430px}
+.si{aspect-ratio:1;border-radius:11px;background:rgba(255,255,255,.08);font-size:2rem;display:flex;align-items:center;justify-content:center;border:2.5px solid transparent;transition:.15s;cursor:pointer}
+.si:hover{transform:scale(1.1)}.si.found{background:rgba(80,220,100,.28);border-color:#50dc64}.si.miss{animation:shk .4s;background:rgba(255,80,80,.25);border-color:#ff5050}
+@keyframes shk{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+#bbar{position:relative;width:100%;max-width:330px;height:24px;background:rgba(255,255,255,.12);border-radius:11px;margin:11px auto;overflow:hidden}
+#bfill{position:absolute;top:0;left:50%;transform:translateX(-50%);height:100%;width:11px;background:#fff;border-radius:5px;transition:left .07s linear}
+#bbar::after{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:68px;height:100%;background:rgba(80,220,100,.35);border-radius:5px}
+.mg-result{font-size:1rem;text-align:center;padding:14px;border-radius:14px;margin-top:11px;width:100%;line-height:1.4}
+.mg-result.win{background:rgba(80,220,100,.15);color:#b5ffbf}.mg-result.lose{background:rgba(255,180,80,.15);color:#ffe0a0}
+.lab-panel{background:linear-gradient(160deg,#0a2a1a,#0d2040);border:3px solid #50dc98;border-radius:28px;padding:20px;max-width:740px;width:100%;position:relative;margin:auto;color:#fff}
+.hab-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:13px}
+@media(max-width:530px){.hab-grid{grid-template-columns:repeat(2,1fr)}}
+.hab-card{background:rgba(255,255,255,.07);border:2px solid rgba(255,255,255,.13);border-radius:15px;padding:11px 7px;text-align:center}
+.hico{font-size:2rem;margin-bottom:3px}.hname{font-size:.85rem;font-weight:900}.htxt{font-size:.68rem;color:#d4c8ff;line-height:1.3}
+.feed-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:100%;max-width:400px}
+.fi{aspect-ratio:1;border-radius:13px;border:2.5px solid rgba(255,255,255,.18);background:rgba(255,255,255,.08);font-size:2rem;display:flex;align-items:center;justify-content:center;transition:.15s;cursor:pointer}
+.fi:hover{transform:scale(1.08)}.fi.good{background:rgba(80,220,100,.28);border-color:#50dc64}.fi.bad{animation:shk .4s;background:rgba(255,80,80,.22);border-color:#ff5050}.fi.used{opacity:.28;pointer-events:none}
+.hm-bar{width:100%;max-width:290px;height:19px;background:rgba(255,255,255,.1);border-radius:10px;overflow:hidden;border:2px solid #50dc98;margin:5px auto 9px}
+.hm-fill{height:100%;background:linear-gradient(90deg,#50dc98,#ffe066);transition:width .5s;width:0%}
+#cert{display:none;position:fixed;inset:0;z-index:800;background:rgba(5,0,20,.97);align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:20px;overflow-y:auto}
+#cert.on{display:flex}
+.cert-card{background:linear-gradient(155deg,#1a0a3e,#061944);border:4px solid #FFE66D;border-radius:28px;padding:26px 20px;max-width:540px;width:100%}
+.cert-star{font-size:3.8rem;animation:spin 5s linear infinite;display:block;margin-bottom:5px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.cert-title{font-size:clamp(1.9rem,5.5vw,3rem);font-weight:900;background:linear-gradient(135deg,#FFE66D,#FF9E1F);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.cert-sub{font-size:.95rem;color:#c8deff;margin-bottom:11px}
+.cert-br{display:flex;gap:2px;justify-content:center;margin:11px 0;flex-wrap:wrap}
+.cert-bc{display:flex;flex-direction:column;align-items:center;gap:4px;padding:0 6px}
+.cert-bi{width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.75rem;border:3px solid}
+.cert-bn{font-size:.67rem;font-weight:900;max-width:64px;text-align:center;line-height:1.2}
+.cert-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:11px 0}
+.cst{background:rgba(255,255,255,.07);border-radius:11px;padding:9px}
+.csn{font-size:1.6rem;font-weight:900;color:#FFE66D}.csl{font-size:.71rem;color:#a0b4e0;margin-top:2px}
+.cert-fact{background:rgba(255,230,109,.08);border:2px solid rgba(255,230,109,.25);border-radius:13px;padding:11px;margin:9px 0;font-size:.86rem;color:#e8d8ff;line-height:1.55}
+#celeb{display:none;position:fixed;inset:0;z-index:950;pointer-events:none;align-items:center;justify-content:center}
+#celeb.on{display:flex}
+.cp{position:absolute;border-radius:3px;animation:cfal linear forwards}
+@keyframes cfal{0%{opacity:1;transform:translateY(-10px)rotate(0)}100%{opacity:0;transform:translateY(100vh)rotate(720deg)}}
+</style>
+</head>
+<body><div id="app">
+
+<div id="navBtns">
+  <button class="nb" onclick="goBack()">← Back</button>
+  <button class="nb" onclick="goHome()">🏠 Home</button>
+</div>
+<div id="trBtns">
+  <button class="nb" id="audioBtn" onclick="toggleAudio()">🔊 Audio</button>
+  <button class="nb brain-btn" onclick="openBrainMap()">🧠 Brain Map</button>
+  <button class="nb lab-btn" onclick="openLab()">🧪 Lab</button>
+</div>
+
+<!-- S1 CHAR SELECT -->
+<div class="scr on" id="s1">
+  <h1 class="big-title" style="margin-bottom:18px">Choose Your Character! 🌟</h1>
+  <div class="char-row">
+    <!-- GIRL -->
+    <div class="char-opt" id="optGirl" onclick="selectChar('girl')">
+      <svg viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="50" cy="40" rx="27" ry="28" fill="#c8700a"/>
+        <path d="M74 32 Q92 26 90 46 Q88 60 77 56 Q83 43 74 37Z" fill="#c8700a"/>
+        <rect x="44" y="66" width="12" height="11" rx="5" fill="#fde4b8"/>
+        <circle cx="50" cy="43" r="26" fill="#fde4b8" stroke="#e8b878" stroke-width="1.5"/>
+        <path d="M25 38 Q26 16 50 15 Q74 16 75 38 Q65 25 50 26 Q35 25 25 38Z" fill="#c8700a"/>
+        <!-- eyes -->
+        <circle cx="40" cy="40" r="4.8" fill="#2a1200"/>
+        <circle cx="60" cy="40" r="4.8" fill="#2a1200"/>
+        <circle cx="41.6" cy="38.4" r="1.7" fill="#fff"/>
+        <circle cx="61.6" cy="38.4" r="1.7" fill="#fff"/>
+        <!-- lashes LEFT eye -->
+        <line x1="36.5" y1="35.8" x2="35.5" y2="32.8" stroke="#2a1200" stroke-width="1.2" stroke-linecap="round"/>
+        <line x1="39.5" y1="35.0" x2="39.2" y2="31.9" stroke="#2a1200" stroke-width="1.2" stroke-linecap="round"/>
+        <line x1="42.5" y1="35.4" x2="43.4" y2="32.5" stroke="#2a1200" stroke-width="1.2" stroke-linecap="round"/>
+        <!-- lashes RIGHT eye -->
+        <line x1="56.5" y1="35.8" x2="55.5" y2="32.8" stroke="#2a1200" stroke-width="1.2" stroke-linecap="round"/>
+        <line x1="59.5" y1="35.0" x2="59.2" y2="31.9" stroke="#2a1200" stroke-width="1.2" stroke-linecap="round"/>
+        <line x1="62.5" y1="35.4" x2="63.4" y2="32.5" stroke="#2a1200" stroke-width="1.2" stroke-linecap="round"/>
+        <circle cx="50" cy="48" r="1.5" fill="#d4956a" opacity=".65"/>
+        <path d="M42 55 Q50 63 58 55" fill="none" stroke="#c07060" stroke-width="2.2" stroke-linecap="round"/>
+        <ellipse cx="30" cy="49" rx="7" ry="4.5" fill="#ffaaa0" opacity=".6"/>
+        <ellipse cx="70" cy="49" rx="7" ry="4.5" fill="#ffaaa0" opacity=".6"/>
+        <!-- body -->
+        <path d="M20 77 L20 128 Q20 134 26 134 L74 134 Q80 134 80 128 L80 77 Q72 71 62 73 L50 77 L38 73 Q28 71 20 77Z" fill="#f090b8" stroke="#d060a0" stroke-width="1.5"/>
+        <path d="M40 74 L50 83 L60 74" fill="none" stroke="#d060a0" stroke-width="1.8"/>
+        <path d="M20 81 Q8 93 7 111" stroke="#f090b8" stroke-width="12" stroke-linecap="round" fill="none"/>
+        <circle cx="7" cy="114" r="6.5" fill="#fde4b8" stroke="#e8b878" stroke-width="1.2"/>
+        <path d="M80 81 Q93 71 96 57" stroke="#f090b8" stroke-width="12" stroke-linecap="round" fill="none"/>
+        <circle cx="97" cy="54" r="6.5" fill="#fde4b8" stroke="#e8b878" stroke-width="1.2"/>
+        <path d="M20 128 Q22 140 50 142 Q78 140 80 128Z" fill="#90c8f0" stroke="#60a0d8" stroke-width="1.5"/>
+        <ellipse cx="34" cy="141" rx="11" ry="5" fill="#6b4226"/>
+        <ellipse cx="66" cy="141" rx="11" ry="5" fill="#6b4226"/>
+      </svg>
+      <div class="char-lbl">👧 Girl</div>
+    </div>
+    <!-- BOY: flat dark brown hair + blue band, white shirt + brown jacket -->
+    <div class="char-opt" id="optBoy" onclick="selectChar('boy')">
+      <svg viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg">
+        <!-- hair flat cap -->
+        <ellipse cx="50" cy="29" rx="27" ry="16" fill="#3a1e00"/>
+        <rect x="23" y="28" width="54" height="9" rx="4" fill="#3a1e00"/>
+        <rect x="22" y="28" width="8" height="20" rx="4" fill="#3a1e00"/>
+        <rect x="70" y="28" width="8" height="20" rx="4" fill="#3a1e00"/>
+        <!-- blue headband -->
+        <path d="M23 33 Q50 26 77 33" fill="none" stroke="#3a88e8" stroke-width="4" stroke-linecap="round"/>
+        <rect x="44" y="66" width="12" height="11" rx="5" fill="#fde4b8"/>
+        <circle cx="50" cy="43" r="26" fill="#fde4b8" stroke="#e8b878" stroke-width="1.5"/>
+        <path d="M24 38 Q24 16 50 15 Q76 16 76 38 Q66 28 50 28 Q34 28 24 38Z" fill="#3a1e00"/>
+        <circle cx="40" cy="40" r="4.8" fill="#1a0800"/>
+        <circle cx="60" cy="40" r="4.8" fill="#1a0800"/>
+        <circle cx="41.6" cy="38.4" r="1.7" fill="#fff"/>
+        <circle cx="61.6" cy="38.4" r="1.7" fill="#fff"/>
+        <path d="M35.5 33.5 L44.5 33.5" stroke="#3a1e00" stroke-width="2" stroke-linecap="round"/>
+        <path d="M55.5 33.5 L64.5 33.5" stroke="#3a1e00" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="50" cy="48" r="1.5" fill="#d4956a" opacity=".65"/>
+        <path d="M42 55 Q50 64 58 55" fill="none" stroke="#c07060" stroke-width="2.2" stroke-linecap="round"/>
+        <ellipse cx="30" cy="49" rx="7" ry="4.5" fill="#ffaaa0" opacity=".55"/>
+        <ellipse cx="70" cy="49" rx="7" ry="4.5" fill="#ffaaa0" opacity=".55"/>
+        <!-- white shirt underneath -->
+        <path d="M22 77 L22 130 Q22 136 28 136 L72 136 Q78 136 78 130 L78 77 Q70 71 60 73 L50 77 L40 73 Q30 71 22 77Z" fill="#f5f5f5" stroke="#ddd" stroke-width="1.2"/>
+        <!-- brown jacket open panels -->
+        <path d="M22 77 L22 128 Q28 132 38 128 L38 77Z" fill="#7b4a1a" stroke="#5a3210" stroke-width="1.4"/>
+        <path d="M78 77 L78 128 Q72 132 62 128 L62 77Z" fill="#7b4a1a" stroke="#5a3210" stroke-width="1.4"/>
+        <!-- jacket lapels -->
+        <path d="M40 74 L50 86 L60 74" fill="none" stroke="#5a3210" stroke-width="1.8"/>
+        <!-- jacket collar notch -->
+        <path d="M38 77 Q44 80 50 86 Q56 80 62 77" fill="none" stroke="#5a3210" stroke-width="1.4"/>
+        <!-- left arm -->
+        <path d="M22 81 Q9 93 8 111" stroke="#7b4a1a" stroke-width="12" stroke-linecap="round" fill="none"/>
+        <circle cx="8" cy="114" r="6.5" fill="#fde4b8" stroke="#e8b878" stroke-width="1.2"/>
+        <!-- right arm waving -->
+        <path d="M78 81 Q92 71 95 57" stroke="#7b4a1a" stroke-width="12" stroke-linecap="round" fill="none"/>
+        <circle cx="96" cy="54" r="6.5" fill="#fde4b8" stroke="#e8b878" stroke-width="1.2"/>
+        <!-- shorts -->
+        <path d="M24 130 L20 142 L46 142 L50 134 L54 142 L80 142 L76 130Z" fill="#8aaace" stroke="#5880aa" stroke-width="1.5"/>
+        <ellipse cx="32" cy="142" rx="12" ry="5" fill="#2a1800"/>
+        <ellipse cx="68" cy="142" rx="12" ry="5" fill="#2a1800"/>
+      </svg>
+      <div class="char-lbl">👦 Boy</div>
+    </div>
+  </div>
+  <div class="start-box" id="startBox">
+    <svg id="heroLarge" viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg" class="hero-big"></svg>
+    <div class="wonder-box">I wonder how my brain works! 🤔</div>
+    <div style="margin-top:13px">
+      <h1 class="big-title">What's Inside Your Head?</h1>
+      <p class="subtitle">Every time you think, feel, or move — your amazing brain makes it happen!</p>
+      <div class="btn-row">
+        <button class="big-btn btn-y" onclick="playBodyZoom()">Let's Explore! ✨</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BODY ZOOM -->
+<div id="zoomScr">
+  <div id="zpOuter">
+    <svg id="zpKid" viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;position:absolute;top:0;left:0"></svg>
+    <div id="zpBrainWindow">
+      <svg viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">
+        <defs>
+          <radialGradient id="bg2" cx="50%" cy="42%" r="52%">
+            <stop offset="0%" stop-color="#ff60c0"/>
+            <stop offset="50%" stop-color="#f0006a"/>
+            <stop offset="100%" stop-color="#aa0050"/>
+          </radialGradient>
+          <radialGradient id="bs2" cx="32%" cy="25%" r="38%">
+            <stop offset="0%" stop-color="rgba(255,220,245,0.9)"/>
+            <stop offset="100%" stop-color="rgba(255,180,230,0)"/>
+          </radialGradient>
+        </defs>
+        <!-- brain scaled to fill viewbox edge to edge -->
+        <g transform="translate(0,2) scale(0.95 0.92)">
+          <path d="M19 58C9 47 10 28 22.5 18c13-10.5 29-6 35 1 11.5-12 35-12 48 1 11.5 11 10.5 29 3 39-9.5 11-25 12.5-34.5 6C62.5 75 46 76 36 69.5 28.5 74 16 72.5 10 59Z" fill="url(#bg2)" stroke="#8a0045" stroke-width="2.2"/>
+          <!-- folds -->
+          <path d="M24.5 37.5c11-9.5 24-7.5 27.5 4" fill="none" stroke="#ffaadd" stroke-width="2.8" stroke-linecap="round"/>
+          <path d="M55 23c13.5 2 18.5 12.5 14.5 25" fill="none" stroke="#ffaadd" stroke-width="2.8" stroke-linecap="round"/>
+          <path d="M83 26c13.5 6 17 22 7 32" fill="none" stroke="#ffaadd" stroke-width="2.8" stroke-linecap="round"/>
+          <path d="M37.5 62c12-7 24.5-5 30.5 4.5" fill="none" stroke="#ffaadd" stroke-width="2.8" stroke-linecap="round"/>
+          <path d="M28 48c8-6 18-5 22 3" fill="none" stroke="#ffaadd" stroke-width="2.2" stroke-linecap="round"/>
+          <!-- shine -->
+          <path d="M19 58C9 47 10 28 22.5 18c13-10.5 29-6 35 1 11.5-12 35-12 48 1 11.5 11 10.5 29 3 39-9.5 11-25 12.5-34.5 6C62.5 75 46 76 36 69.5 28.5 74 16 72.5 10 59Z" fill="url(#bs2)"/>
+          <!-- sparks -->
+          <circle cx="50" cy="30" r="2.5" fill="#fff"><animate attributeName="opacity" values="1;0.2;1" dur="1.2s" repeatCount="indefinite"/></circle>
+          <circle cx="80" cy="42" r="2" fill="#fff"><animate attributeName="opacity" values="0.9;0.1;0.9" dur="0.9s" repeatCount="indefinite"/></circle>
+          <circle cx="30" cy="54" r="2" fill="#fff"><animate attributeName="opacity" values="0.8;0.15;0.8" dur="1.5s" repeatCount="indefinite"/></circle>
+          <circle cx="65" cy="60" r="2" fill="#fff"><animate attributeName="opacity" values="1;0.2;1" dur="1.1s" repeatCount="indefinite"/></circle>
+        </g>
+      </svg>
+    </div>
+  </div>
+  <div id="zpFullBrain">
+    <svg id="zpFullBrainSvg" viewBox="0 0 760 430" xmlns="http://www.w3.org/2000/svg" style="width:100%;overflow:visible"></svg>
+  </div>
+  <div class="zoom-cap" id="zoomCap"></div>
+</div>
+
+<!-- S2 SCENARIOS -->
+<div class="scr" id="s2">
+  <h1 class="big-title">Pick a Moment! 🌟</h1>
+  <p class="subtitle">Choose an activity to unlock your Brain Superpowers!</p>
+  <div class="s2-hud">
+    <span style="font-size:.88rem;font-weight:900;color:#FFE66D">🧠 Unlocked: <span id="s2pcnt">0</span>/5</span>
+    <div style="display:flex;gap:6px" id="s2badges">
+      <div class="bdg" id="s2b0">🧩</div><div class="bdg" id="s2b1">🎵</div><div class="bdg" id="s2b2">✋</div><div class="bdg" id="s2b3">👁️</div><div class="bdg" id="s2b4">⚡</div>
+    </div>
+  </div>
+  <div class="sc-grid" id="scGrid"></div>
+</div>
+
+<!-- BRAIN TRANS -->
+<div id="brainTransScr">
+  <div class="bt-zone-label" id="btZoneLabel"></div>
+  <div id="btBrainWrap">
+    <svg id="btBrainSvg" viewBox="0 0 760 430" xmlns="http://www.w3.org/2000/svg" style="width:100%;overflow:visible"></svg>
+  </div>
+  <div class="bt-cap" id="btCap"></div>
+</div>
+
+<!-- BRAIN MAP OVERLAY (info only, not clickable) -->
+<div id="brainMapOv">
+  <div class="ov-bg" onclick="closeBrainMap()"></div>
+  <div class="bmap-panel">
+    <button class="bmap-pcls" onclick="closeBrainMap()">✕</button>
+    <div class="bmap-title">🧠 Your Brain Map</div>
+    <div class="bmap-sub">Each part of your brain has a special superpower!</div>
+    <svg id="bmapSvg" viewBox="0 0 760 430" xmlns="http://www.w3.org/2000/svg" style="width:100%;overflow:visible;pointer-events:none"></svg>
+  </div>
+</div>
+
+<!-- PANEL (activity panel) -->
+<div class="ov" id="ov">
+  <div class="ov-bg" onclick="closePanel()"></div>
+  <div class="panel" id="panel">
+    <button class="pcls" onclick="closePanel()">✕</button>
+    <div class="panel-top">
+      <div class="panel-brain-box">
+        <svg id="pBrainSvg" viewBox="0 0 760 430" xmlns="http://www.w3.org/2000/svg" style="width:100%;overflow:visible"></svg>
+        <div style="text-align:center;margin-top:6px"><span class="panel-brain-label" id="pBrainLabel"></span></div>
+      </div>
+      <div class="panel-info">
+        <div class="panel-char" id="pChar"></div>
+        <div class="panel-sentence" id="pSentence"></div>
+        <span class="char-tag" id="pTag"></span>
+        <div class="panel-desc" id="pDesc"></div>
+      </div>
+    </div>
+    <div class="sec-lbl">🌎 Real Life Connections</div>
+    <div class="rl-grid" id="rlGrid"></div>
+    <div class="game-time-banner"><span class="gt-i">🎮</span><h3>Game Time!</h3><span class="gt-i">⭐</span></div>
+    <div class="game-wrap">
+      <div class="game-title" id="gtitle"></div>
+      <div class="game-body" id="gbody"></div>
+    </div>
+  </div>
+</div>
+
+<!-- LAB -->
+<div class="ov" id="labOv">
+  <div class="ov-bg" onclick="closeLab()"></div>
+  <div class="lab-panel">
+    <button class="pcls" onclick="closeLab()">✕</button>
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:13px">
+      <span style="font-size:2.8rem">🧪</span>
+      <div><div style="font-size:1.4rem;font-weight:900;color:#50dc98">Healthy Brain Lab</div>
+      <div style="font-size:.82rem;color:#a0d8c0">What keeps your brain strong?</div></div>
+    </div>
+    <div class="hab-grid" id="habGrid"></div>
+    <div style="background:rgba(255,255,255,.05);border-radius:16px;padding:13px">
+      <div style="text-align:center;font-size:1rem;font-weight:900;margin-bottom:11px">🎮 Feed the Brain! Tap healthy choices.</div>
+      <div style="display:flex;flex-direction:column;align-items:center">
+        <div style="font-size:3.8rem;margin-bottom:4px" id="labface">😐</div>
+        <div class="hm-bar"><div class="hm-fill" id="hmfill"></div></div>
+        <div id="labscore" style="font-size:.82rem;color:#a0d8c0;margin-bottom:9px;min-height:17px"></div>
+        <div class="feed-grid" id="feedItems"></div>
+        <div id="labfb" style="text-align:center;font-size:.88rem;min-height:24px;margin-top:7px"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="cert">
+  <div class="cert-card">
+    <span class="cert-star">🌟</span>
+    <div class="cert-title">BRAIN MASTER!</div>
+    <div class="cert-sub">You unlocked all 5 Brain Superpowers!</div>
+    <div class="cert-br" id="certBr"></div>
+    <div class="cert-stats">
+      <div class="cst"><div class="csn">5</div><div class="csl">Superpowers Unlocked</div></div>
+      <div class="cst"><div class="csn">🧠</div><div class="csl">Brain Scientist!</div></div>
+      <div class="cst"><div class="csn">5</div><div class="csl">Games Completed</div></div>
+      <div class="cst"><div class="csn">100%</div><div class="csl">Brain Power!</div></div>
+    </div>
+    <div class="cert-fact">Your brain has 100 billion cells — every time you learn, it gets stronger! ✨</div>
+    <button class="big-btn btn-y" style="width:100%;margin-top:4px" onclick="document.getElementById('cert').classList.remove('on')">Keep Exploring! 🚀</button>
+  </div>
+</div>
+<div id="celeb"><div></div></div>
+
+<script>
+const COLS=['#FF8C42','#9B59B6','#1ABC9C','#E74C3C','#F1C40F'];
+const LOBE_PX=[{cx:166,cy:178},{cx:355,cy:322},{cx:408,cy:163},{cx:583,cy:287},{cx:562,cy:363}];
+const BP={
+  outer:'M88,278C55,252 40,215 50,173C61,124 102,82 156,64C199,50 241,55 274,75C313,39 377,28 437,49C504,72 548,119 558,174C594,176 626,197 646,230C671,273 659,318 625,346C594,372 548,378 510,360C487,386 446,397 407,388C374,381 349,361 337,337C302,356 257,359 220,343C188,329 168,307 159,282C135,291 106,292 88,278Z',
+  stem:'M505,348C493,367 488,392 494,412C500,432 518,438 535,426C552,414 553,389 542,367C532,348 516,340 508,345Z',
+  l:['M88,278C55,252 40,215 50,173C61,124 102,82 156,64C199,50 241,55 274,75C265,104 256,138 253,172C250,207 262,236 285,259C255,274 220,288 186,299C148,311 111,298 88,278Z',
+     'M159,282C199,264 246,253 299,247C354,241 414,246 462,260C503,272 528,294 536,321C544,348 527,372 494,386C458,402 409,400 371,383C343,371 322,354 310,333C278,351 230,353 194,337C171,327 157,306 159,282Z',
+     'M274,75C313,39 377,28 437,49C504,72 548,119 558,174C546,199 526,222 501,240C472,263 434,276 394,276C350,276 313,260 287,231C262,204 251,172 255,139C259,113 266,91 274,75Z',
+     'M558,174C594,176 626,197 646,230C671,273 659,318 625,346C594,372 548,378 510,360C491,343 480,319 479,291C478,260 491,231 513,209C533,191 550,180 558,174Z',
+     'M493,316C509,292 541,282 574,289C611,296 636,322 638,356C641,391 616,416 578,421C540,426 505,409 489,378C478,356 480,334 493,316Z'],
+  div:'M274,75C260,112 249,157 258,197C265,231 290,257 326,271M558,174C537,209 524,248 527,284C530,315 546,340 572,356M159,282C206,262 263,251 325,247C377,243 433,250 487,266'
+};
+const BGRADS=[['#ffbd73','#e85d00'],['#c4a0ff','#6432cc'],['#60f2f2','#0089a6'],['#ff8b8b','#cb2020'],['#fff27a','#d99b00']];
+
+// lobe label positions for brain map overview [x, y of name, y of emoji, y of purpose]
+const LOBE_LABEL_POS=[[160,175,152,198],[355,330,307,353],[400,130,107,153],[580,285,262,308],[558,382,359,405]];
+// lobe emojis for overview
+const LOBE_EMOJI=['🤔','🎵','✋','👀','🤸'];
+
+const GIRL_SVG=`<ellipse cx="50" cy="40" rx="27" ry="28" fill="#c8700a"/><path d="M74 32 Q92 26 90 46 Q88 60 77 56 Q83 43 74 37Z" fill="#c8700a"/><rect x="44" y="66" width="12" height="11" rx="5" fill="#fde4b8"/><circle cx="50" cy="43" r="26" fill="#fde4b8" stroke="#e8b878" stroke-width="1.5"/><path d="M25 38 Q26 16 50 15 Q74 16 75 38 Q65 25 50 26 Q35 25 25 38Z" fill="#c8700a"/><circle cx="40" cy="40" r="4.8" fill="#2a1200"/><circle cx="60" cy="40" r="4.8" fill="#2a1200"/><circle cx="41.6" cy="38.4" r="1.7" fill="#fff"/><circle cx="61.6" cy="38.4" r="1.7" fill="#fff"/><line x1="36.5" y1="35.8" x2="35.5" y2="32.8" stroke="#2a1200" stroke-width="1.2" stroke-linecap="round"/><line x1="39.5" y1="35.0" x2="39.2" y2="31.9" stroke="#2a1200" stroke-width="1.2" stroke-linecap="round"/><line x1="42.5" y1="35.4" x2="43.4" y2="32.5" stroke="#2a1200" stroke-width="1.2" stroke-linecap="round"/><line x1="56.5" y1="35.8" x2="55.5" y2="32.8" stroke="#2a1200" stroke-width="1.2" stroke-linecap="round"/><line x1="59.5" y1="35.0" x2="59.2" y2="31.9" stroke="#2a1200" stroke-width="1.2" stroke-linecap="round"/><line x1="62.5" y1="35.4" x2="63.4" y2="32.5" stroke="#2a1200" stroke-width="1.2" stroke-linecap="round"/><circle cx="50" cy="48" r="1.5" fill="#d4956a" opacity=".65"/><path d="M42 55 Q50 63 58 55" fill="none" stroke="#c07060" stroke-width="2.2" stroke-linecap="round"/><ellipse cx="30" cy="49" rx="7" ry="4.5" fill="#ffaaa0" opacity=".6"/><ellipse cx="70" cy="49" rx="7" ry="4.5" fill="#ffaaa0" opacity=".6"/><path d="M20 77 L20 128 Q20 134 26 134 L74 134 Q80 134 80 128 L80 77 Q72 71 62 73 L50 77 L38 73 Q28 71 20 77Z" fill="#f090b8" stroke="#d060a0" stroke-width="1.5"/><path d="M40 74 L50 83 L60 74" fill="none" stroke="#d060a0" stroke-width="1.8"/><path d="M20 81 Q8 93 7 111" stroke="#f090b8" stroke-width="12" stroke-linecap="round" fill="none"/><circle cx="7" cy="114" r="6.5" fill="#fde4b8" stroke="#e8b878" stroke-width="1.2"/><path d="M80 81 Q93 71 96 57" stroke="#f090b8" stroke-width="12" stroke-linecap="round" fill="none"/><circle cx="97" cy="54" r="6.5" fill="#fde4b8" stroke="#e8b878" stroke-width="1.2"/><path d="M20 128 Q22 140 50 142 Q78 140 80 128Z" fill="#90c8f0" stroke="#60a0d8" stroke-width="1.5"/><ellipse cx="34" cy="141" rx="11" ry="5" fill="#6b4226"/><ellipse cx="66" cy="141" rx="11" ry="5" fill="#6b4226"/>`;
+
+const BOY_SVG=`<ellipse cx="50" cy="29" rx="27" ry="16" fill="#3a1e00"/><rect x="23" y="28" width="54" height="9" rx="4" fill="#3a1e00"/><rect x="22" y="28" width="8" height="20" rx="4" fill="#3a1e00"/><rect x="70" y="28" width="8" height="20" rx="4" fill="#3a1e00"/><path d="M23 33 Q50 26 77 33" fill="none" stroke="#3a88e8" stroke-width="4" stroke-linecap="round"/><rect x="44" y="66" width="12" height="11" rx="5" fill="#fde4b8"/><circle cx="50" cy="43" r="26" fill="#fde4b8" stroke="#e8b878" stroke-width="1.5"/><path d="M24 38 Q24 16 50 15 Q76 16 76 38 Q66 28 50 28 Q34 28 24 38Z" fill="#3a1e00"/><circle cx="40" cy="40" r="4.8" fill="#1a0800"/><circle cx="60" cy="40" r="4.8" fill="#1a0800"/><circle cx="41.6" cy="38.4" r="1.7" fill="#fff"/><circle cx="61.6" cy="38.4" r="1.7" fill="#fff"/><path d="M35.5 33.5 L44.5 33.5" stroke="#3a1e00" stroke-width="2" stroke-linecap="round"/><path d="M55.5 33.5 L64.5 33.5" stroke="#3a1e00" stroke-width="2" stroke-linecap="round"/><circle cx="50" cy="48" r="1.5" fill="#d4956a" opacity=".65"/><path d="M42 55 Q50 64 58 55" fill="none" stroke="#c07060" stroke-width="2.2" stroke-linecap="round"/><ellipse cx="30" cy="49" rx="7" ry="4.5" fill="#ffaaa0" opacity=".55"/><ellipse cx="70" cy="49" rx="7" ry="4.5" fill="#ffaaa0" opacity=".55"/><path d="M22 77 L22 130 Q22 136 28 136 L72 136 Q78 136 78 130 L78 77 Q70 71 60 73 L50 77 L40 73 Q30 71 22 77Z" fill="#f5f5f5" stroke="#ddd" stroke-width="1.2"/><path d="M22 77 L22 128 Q28 132 38 128 L38 77Z" fill="#7b4a1a" stroke="#5a3210" stroke-width="1.4"/><path d="M78 77 L78 128 Q72 132 62 128 L62 77Z" fill="#7b4a1a" stroke="#5a3210" stroke-width="1.4"/><path d="M40 74 L50 86 L60 74" fill="none" stroke="#5a3210" stroke-width="1.8"/><path d="M38 77 Q44 80 50 86 Q56 80 62 77" fill="none" stroke="#5a3210" stroke-width="1.4"/><path d="M22 81 Q9 93 8 111" stroke="#7b4a1a" stroke-width="12" stroke-linecap="round" fill="none"/><circle cx="8" cy="114" r="6.5" fill="#fde4b8" stroke="#e8b878" stroke-width="1.2"/><path d="M78 81 Q92 71 95 57" stroke="#7b4a1a" stroke-width="12" stroke-linecap="round" fill="none"/><circle cx="96" cy="54" r="6.5" fill="#fde4b8" stroke="#e8b878" stroke-width="1.2"/><path d="M24 130 L20 142 L46 142 L50 134 L54 142 L80 142 L76 130Z" fill="#8aaace" stroke="#5880aa" stroke-width="1.5"/><ellipse cx="32" cy="142" rx="12" ry="5" fill="#2a1800"/><ellipse cx="68" cy="142" rx="12" ry="5" fill="#2a1800"/>`;
+
+const SC_ICONS=[
+  `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M10 10 H42 Q42 0 52 0 Q62 0 62 10 H90 V42 Q100 42 100 52 Q100 62 90 62 V90 H58 Q58 100 48 100 Q38 100 38 90 H10 V58 Q0 58 0 48 Q0 38 10 38 Z" fill="#FFE66D" stroke="#FF9E1F" stroke-width="4" stroke-linejoin="round"/></svg>`,
+  `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect x="36" y="5" width="38" height="7" rx="3.5" fill="#c4a0ff"/><rect x="36" y="5" width="7" height="55" rx="3.5" fill="#a855f7"/><rect x="67" y="5" width="7" height="43" rx="3.5" fill="#a855f7"/><ellipse cx="24" cy="70" rx="17" ry="12" fill="#a855f7"/><ellipse cx="55" cy="57" rx="17" ry="12" fill="#c4a0ff"/></svg>`,
+  `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect x="12" y="28" width="76" height="64" rx="14" fill="#d8f5ff" stroke="#1ABC9C" stroke-width="5"/><rect x="12" y="14" width="76" height="16" rx="8" fill="#9be7ff" stroke="#1ABC9C" stroke-width="4"/><line x1="50" y1="28" x2="50" y2="92" stroke="#1ABC9C" stroke-width="3" opacity=".55"/><line x1="12" y1="60" x2="88" y2="60" stroke="#1ABC9C" stroke-width="3" opacity=".55"/></svg>`,
+  `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M6 78 A44 44 0 0 1 94 78" fill="none" stroke="#ff5363" stroke-width="11" stroke-linecap="round"/><path d="M16 78 A34 34 0 0 1 84 78" fill="none" stroke="#FF9E1F" stroke-width="11" stroke-linecap="round"/><path d="M26 78 A24 24 0 0 1 74 78" fill="none" stroke="#FFE66D" stroke-width="11" stroke-linecap="round"/><path d="M36 78 A14 14 0 0 1 64 78" fill="none" stroke="#1ABC9C" stroke-width="11" stroke-linecap="round"/></svg>`,
+  `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="22" cy="72" r="19" fill="none" stroke="#FF8C42" stroke-width="6"/><circle cx="78" cy="72" r="19" fill="none" stroke="#FF8C42" stroke-width="6"/><path d="M22 72 L50 36 L78 72" fill="none" stroke="#FFE66D" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+];
+const SC_BG=['#FFF5C0','#EFE0FF','#DAFAF5','#FFF0F0','#FFF5C0'];
+const SC_LABELS=['Solve a Puzzle','Sing a Song','Touch Cold Ice','See a Rainbow','Ride a Bike'];
+const SC_SUBS=['🧩 Thinking brain','🎵 Memory brain','✋ Touch brain','👁️ Seeing brain','⚡ Balance brain'];
+
+const ZONES=[
+  {name:'Frontal Lobe',shortName:'Frontal',purpose:'Thinking',helper:'Thinker',char:'🤔',tag:'🧩 Thinking Brain',color:COLS[0],
+   sentence:'Your Thinking Brain — Frontal Lobe — is in charge here!',
+   audioIntro:'Solving a puzzle uses your Thinking Brain — the Frontal Lobe!',
+   desc:'Your Frontal Lobe helps you plan, decide, and solve problems!',
+   rl:[{icon:'🧩',n:'Puzzle',d:'Plan each piece'},{icon:'🤝',n:'Sharing',d:'Kind choices'},{icon:'😤',n:'Calm Down',d:'Think first'},{icon:'📝',n:'Maths',d:'Tricky sums'}],game:'sequence'},
+  {name:'Temporal Lobe',shortName:'Temporal',purpose:'Memory',helper:'Melody',char:'🎵',tag:'🎵 Memory Brain',color:COLS[1],
+   sentence:'Your Memory Brain — Temporal Lobe — is singing along!',
+   audioIntro:'Singing a song uses your Memory Brain — the Temporal Lobe!',
+   desc:'Your Temporal Lobe stores memories, loves music, and understands words!',
+   rl:[{icon:'🎶',n:'Song',d:'Remember lyrics'},{icon:'📖',n:'Story',d:'What happened?'},{icon:'📞',n:'Voice',d:'Know Grandma'},{icon:'🎂',n:'Birthday',d:'Remember fun'}],game:'memory'},
+  {name:'Parietal Lobe',shortName:'Parietal',purpose:'Touch',helper:'Feeler',char:'✋',tag:'✋ Touch Brain',color:COLS[2],
+   sentence:'Your Touch Brain — Parietal Lobe — feels that cold!',
+   audioIntro:'Touching cold ice uses your Touch Brain — the Parietal Lobe!',
+   desc:'Your Parietal Lobe feels hot, cold, soft, rough — and knows where your body is!',
+   rl:[{icon:'❄️',n:'Cold Ice',d:'Feel the cold'},{icon:'🧸',n:'Soft Toy',d:'Soft and cozy'},{icon:'🏀',n:'Catch',d:'Find your hands'},{icon:'🤗',n:'Hug',d:'Feel warmth'}],game:'touch'},
+  {name:'Occipital Lobe',shortName:'Occipital',purpose:'Seeing',helper:'Vizzy',char:'👀',tag:'👁️ Seeing Brain',color:COLS[3],
+   sentence:'Your Seeing Brain — Occipital Lobe — loves those colours!',
+   audioIntro:'Seeing a rainbow uses your Seeing Brain — the Occipital Lobe!',
+   desc:'Your Occipital Lobe turns light into colours, shapes, and faces!',
+   rl:[{icon:'🌈',n:'Rainbow',d:'Colours!'},{icon:'😊',n:'Faces',d:'Find friends'},{icon:'📖',n:'Reading',d:'See letters'},{icon:'⚽',n:'Sports',d:'Track the ball'}],game:'ispy'},
+  {name:'Cerebellum',shortName:'Cerebellum',purpose:'Balance',helper:'Mover',char:'🤸',tag:'⚡ Balance Brain',color:COLS[4],
+   sentence:'Your Balance Brain — Cerebellum — keeps you upright!',
+   audioIntro:'Riding a bike uses your Balance Brain — the Cerebellum!',
+   desc:'Your Cerebellum keeps you balanced, smooth, and moving perfectly!',
+   rl:[{icon:'🚲',n:'Bike',d:'Stay balanced'},{icon:'💃',n:'Dance',d:'Move smoothly'},{icon:'🎮',n:'Gaming',d:'Fast fingers'},{icon:'🎨',n:'Drawing',d:'Smooth lines'}],game:'balance'}
+];
+const FEED=[{e:'😴',g:true},{e:'💧',g:true},{e:'🍎',g:true},{e:'🥦',g:true},{e:'🏃',g:true},{e:'📖',g:true},{e:'🌬️',g:true},{e:'🛝',g:true},{e:'🍬',g:false},{e:'📱',g:false},{e:'🛋️',g:false},{e:'😡',g:false}];
+
+let audioOn=true,charChoice='girl',curPage='home',navHist=[],earned=new Set(),curZ=0,mgS={},pulseIv=null,labScore=0,labDone=false,btTimers=[],lastSpoken='';
+const charSvg=()=>charChoice==='girl'?GIRL_SVG:BOY_SVG;
+
+function selectChar(c){
+  charChoice=c;
+  ['optGirl','optBoy'].forEach(id=>document.getElementById(id).classList.remove('sel'));
+  document.getElementById(c==='girl'?'optGirl':'optBoy').classList.add('sel');
+  document.getElementById('heroLarge').innerHTML=charSvg();
+  document.getElementById('startBox').style.display='flex';
+  document.getElementById('zpKid').innerHTML=charSvg();
+}
+function speak(txt,force=false){
+  if(!audioOn||!window.speechSynthesis)return;
+  if(!force&&txt===lastSpoken)return;
+  lastSpoken=txt;speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(txt);u.lang='en-US';u.rate=.88;u.pitch=1.08;speechSynthesis.speak(u);
+}
+function toggleAudio(){audioOn=!audioOn;document.getElementById('audioBtn').textContent=audioOn?'🔊 Audio':'🔇 Audio';}
+function showScr(n,push=true){if(push)navHist.push(curPage);document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));document.getElementById('s'+n).classList.add('on');curPage='s'+n;}
+function goHome(){navHist=[];closePanel();closeLab();closeBrainMap();showScr(1,false);curPage='home';}
+function goBack(){
+  if(document.getElementById('ov').classList.contains('on')){closePanel();return;}
+  if(document.getElementById('labOv').classList.contains('on')){closeLab();return;}
+  if(document.getElementById('brainMapOv').classList.contains('on')){closeBrainMap();return;}
+  const prev=navHist.pop();
+  if(!prev||prev==='home'){goHome();return;}
+  if(prev==='s2'){showScr(2,false);return;}
+  goHome();
+}
+
+function buildBrainSvg(el,hi=-1,overview=false){
+  const uid='u'+Math.random().toString(36).slice(2,7);
+  const defs=BGRADS.map((_,i)=>`<linearGradient id="bx${i}${uid}" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="${BGRADS[i][0]}"/><stop offset="100%" stop-color="${BGRADS[i][1]}"/></linearGradient>`).join('')+
+    `<filter id="gl${uid}"><feGaussianBlur stdDeviation="8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>`;
+  // All lobes always rendered; highlighted one gets glow + full color, others dimmed slightly
+  const lobes=[0,1,2,3,4].map(i=>{
+    const h=(hi===i);
+    const dimStyle=(hi>=0&&!h)?'opacity:.45':'';
+    return `<path d="${BP.l[i]}" fill="url(#bx${i}${uid})" stroke="${h?COLS[i]:'#1a0828'}" stroke-width="${h?7:3}" ${h?`filter="url(#gl${uid})"`:''} style="${dimStyle}"/>`;
+  });
+  const pulse=hi>=0?`<circle cx="${LOBE_PX[hi].cx}" cy="${LOBE_PX[hi].cy}" r="52" fill="${COLS[hi]}" opacity=".45" filter="url(#gl${uid})"><animate attributeName="r" values="40;74;40" dur="1s" repeatCount="indefinite"/><animate attributeName="opacity" values=".45;.75;.45" dur="1s" repeatCount="indefinite"/></circle>`:'';
+  // Labels
+  let lbls='';
+  if(overview){
+    // Brain map: emoji + name + purpose, no click
+    ZONES.forEach((z,i)=>{
+      const [lx,lny,ley,lpy]=LOBE_LABEL_POS[i];
+      lbls+=`<text font-family="Nunito,system-ui" font-weight="900" fill="${COLS[i]}" stroke="#1a0828" paint-order="stroke" text-anchor="middle" x="${lx}" y="${lny}" font-size="22" stroke-width="6">${z.shortName}</text>`;
+      lbls+=`<text font-family="Nunito,system-ui" font-weight="800" fill="#fff" stroke="#1a0828" paint-order="stroke" text-anchor="middle" x="${lx}" y="${lpy}" font-size="16" stroke-width="5">${LOBE_EMOJI[i]} ${z.purpose}</text>`;
+    });
+  } else if(hi>=0){
+    const lp=[[166,184],[355,336],[408,165],[583,297],[562,378]];
+    const lnames=['Thinking','Memory','Touch','Seeing','Balance'];
+    lbls=`<text font-family="Nunito,system-ui" font-weight="900" fill="${COLS[hi]}" stroke="#1a0828" paint-order="stroke" text-anchor="middle" x="${lp[hi][0]}" y="${lp[hi][1]}" font-size="32" stroke-width="8">${lnames[hi]}</text>`;
+  }
+  el.innerHTML=`<defs>${defs}</defs>
+    <ellipse cx="385" cy="413" rx="295" ry="13" fill="rgba(4,1,20,.24)"/>
+    <path d="${BP.stem}" fill="#c9985a" stroke="#7d5738" stroke-width="2"/>
+    ${lobes[4]}
+    <clipPath id="bcp${uid}"><path d="${BP.outer}"/></clipPath>
+    <g clip-path="url(#bcp${uid})">${lobes[0]}${lobes[2]}${lobes[3]}${lobes[1]}</g>
+    <path d="${BP.outer}" fill="none" stroke="#1a0828" stroke-width="3"/>
+    <path d="${BP.div}" fill="none" stroke="#1a0828" stroke-width="2.2" opacity=".5" stroke-linecap="round"/>
+    ${pulse}${lbls}`;
+}
+
+function buildScenarios(){
+  document.getElementById('scGrid').innerHTML=ZONES.map((z,i)=>{
+    const done=earned.has(i);
+    return `<div class="sc-card${done?' done':''}" id="scCard${i}" style="border-color:${done?COLS[i]:COLS[i]+'44'}" onclick="glowAndPlay(${i})">
+      ${done?`<div class="sc-done-badge">⭐</div>`:''}
+      <div class="sc-icon-box" style="background:${SC_BG[i]}">${SC_ICONS[i]}</div>
+      <div class="sc-title">${SC_LABELS[i]}</div>
+      <div class="sc-sub">${SC_SUBS[i]}</div>
+    </div>`;}).join('');
+}
+
+function glowAndPlay(i){
+  const card=document.getElementById('scCard'+i);
+  if(card){card.classList.add('glow-anim');setTimeout(()=>card.classList.remove('glow-anim'),650);}
+  setTimeout(()=>playBrainTrans(i),220);
+}
+
+function openBrainMap(){
+  buildBrainSvg(document.getElementById('bmapSvg'),-1,true);
+  document.getElementById('brainMapOv').classList.add('on');
+  document.body.style.overflow='hidden';
+}
+function closeBrainMap(){
+  document.getElementById('brainMapOv').classList.remove('on');
+  document.body.style.overflow='';
+}
+
+// ZOOM
+function playBodyZoom(){
+  document.getElementById('zpKid').innerHTML=charSvg();
+  buildBrainSvg(document.getElementById('zpFullBrainSvg'));
+  const zs=document.getElementById('zoomScr'),cap=document.getElementById('zoomCap');
+  const outer=document.getElementById('zpOuter');
+  const bw=document.getElementById('zpBrainWindow');
+  const fb=document.getElementById('zpFullBrain');
+  outer.style.transition='none';outer.style.transform='scale(1) translateY(0)';outer.style.opacity='1';
+  bw.style.transition='none';bw.style.opacity='0';
+  fb.style.transition='none';fb.style.opacity='0';fb.style.transform='scale(.4)';
+  zs.classList.add('on');
+  cap.textContent='Let\'s zoom into your forehead…';speak('Lets zoom into your forehead',true);
+  setTimeout(()=>{
+    outer.style.transition='transform 3s cubic-bezier(.22,.61,.36,1),opacity 2.8s';
+    outer.style.transform='scale(7) translateY(-25%)';outer.style.opacity='.06';
+    cap.textContent='Zooming in…';
+  },700);
+  setTimeout(()=>{
+    bw.style.transition='opacity 1.8s';bw.style.opacity='1';
+    cap.textContent='There\'s your brain inside your head! 🧠';
+    speak('There is your brain inside your head!',true);
+  },2800);
+  setTimeout(()=>{
+    outer.style.opacity='0';
+    fb.style.transition='opacity 1.4s,transform 1.4s cubic-bezier(.22,.61,.36,1)';
+    fb.classList.add('show');
+    cap.textContent='This is your amazing brain — it controls everything! 🧠✨';
+    speak('This is your amazing brain. It controls everything!',true);
+  },5000);
+  setTimeout(()=>{
+    zs.classList.remove('on');
+    outer.style.transition='none';outer.style.transform='scale(1) translateY(0)';outer.style.opacity='1';
+    bw.style.opacity='0';fb.classList.remove('show');
+    showScr(2,true);buildScenarios();
+  },8200);
+}
+
+// BRAIN TRANS
+function playBrainTrans(i){
+  navHist.push(curPage);
+  const z=ZONES[i];btTimers.forEach(clearTimeout);btTimers=[];
+  const scr=document.getElementById('brainTransScr');
+  const bw=document.getElementById('btBrainWrap'),cap=document.getElementById('btCap'),zl=document.getElementById('btZoneLabel');
+  bw.style.transition='none';bw.style.opacity='0';bw.style.transform='scale(.6) translateY(16px)';
+  zl.classList.remove('show');zl.textContent='';cap.textContent='';cap.style.color='#fff';
+  buildBrainSvg(document.getElementById('btBrainSvg'),i);
+  scr.classList.add('on');speak(z.audioIntro,true);
+  btTimers.push(setTimeout(()=>{
+    bw.style.transition='opacity .6s,transform .7s cubic-bezier(.22,.61,.36,1)';bw.classList.add('show');
+  },80));
+  btTimers.push(setTimeout(()=>{
+    zl.innerHTML=`<span style="color:${z.color};text-shadow:0 0 18px ${z.color}88">${z.char} ${z.name} is lighting up!</span>`;
+    zl.classList.add('show');cap.textContent=z.sentence;cap.style.color=z.color;
+  },600));
+  btTimers.push(setTimeout(()=>{
+    scr.classList.remove('on');bw.classList.remove('show');zl.classList.remove('show');
+    openZone(i);
+  },3200));
+}
+
+function openZone(i){
+  curZ=i;const z=ZONES[i];
+  buildBrainSvg(document.getElementById('pBrainSvg'),i);
+  const lb=document.getElementById('pBrainLabel');lb.textContent='✨ '+z.name;lb.style.background=z.color+'33';lb.style.color=z.color;
+  document.getElementById('pChar').textContent=z.char;
+  panel.style.borderColor=z.color;
+  const ps=document.getElementById('pSentence');ps.textContent=z.sentence;ps.style.background=z.color+'22';ps.style.color=z.color;ps.style.border=`2px solid ${z.color}44`;
+  const tag=document.getElementById('pTag');tag.textContent=z.tag;tag.style.background=z.color+'33';tag.style.color=z.color;
+  document.getElementById('pDesc').textContent=z.desc;
+  document.getElementById('rlGrid').innerHTML=z.rl.map(r=>`<div class="rl-card"><div class="rl-img"><span style="font-size:2.2rem">${r.icon}</span></div><div class="rl-body"><div class="rl-name">${r.n}</div><div class="rl-desc">${r.d}</div></div></div>`).join('');
+  loadGame(z.game);
+  speak(z.sentence,true);
+  document.getElementById('ov').classList.add('on');document.body.style.overflow='hidden';
+}
+
+// Close panel → always return to Pick a Moment screen
+function closePanel(){
+  document.getElementById('ov').classList.remove('on');
+  document.body.style.overflow='';
+  if(mgS.iv)clearInterval(mgS.iv);mgS={};
+  showScr(2,false);
+  buildScenarios(); // refresh to show any newly earned stars
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closePanel();closeLab();closeBrainMap();}});
+
+function earnBadge(i){
+  if(earned.has(i))return;earned.add(i);
+  // sync both badge bars
+  const b=document.getElementById('b'+i);if(b)b.classList.add('on');
+  const s2b=document.getElementById('s2b'+i);if(s2b)s2b.classList.add('on');
+  const s2p=document.getElementById('s2pcnt');if(s2p)s2p.textContent=earned.size;
+  if(earned.size===5)setTimeout(()=>{
+    document.getElementById('certBr').innerHTML=ZONES.map((z,j)=>`<div class="cert-bc"><div class="cert-bi" style="background:${z.color}22;border-color:${z.color}">${z.char}</div><div class="cert-bn" style="color:${z.color}">${z.helper}</div></div>`).join('');
+    document.getElementById('cert').classList.add('on');celebrate();
+  },500);
+}
+
+const GNAMES={sequence:'Copy the Pattern',memory:'Memory Match',touch:'Soft or Rough?',ispy:'I Spy!',balance:'Balance Challenge'};
+function loadGame(t){mgS={};document.getElementById('gbody').innerHTML='';document.getElementById('gtitle').textContent=GNAMES[t]||t;if(t==='sequence')bldSeq();else if(t==='memory')bldMem();else if(t==='touch')bldTch();else if(t==='ispy')bldSpy();else if(t==='balance')bldBal();}
+function bldSeq(){mgS={round:1,total:3,seq:[],player:[],phase:'ready'};document.getElementById('gbody').innerHTML=`<div style="text-align:center"><div style="font-size:4rem;margin-bottom:10px">🧩</div><p style="margin-bottom:13px">Watch → Remember → Copy!</p><button class="gb start-btn" onclick="startSeqR()">Start Round 1 ▶️</button></div>`;}
+function startSeqR(){const sy=['🌟','🎈','🦋','🍎'],len=mgS.round+2;mgS.seq=Array.from({length:len},()=>sy[Math.floor(Math.random()*sy.length)]);mgS.player=[];mgS.phase='show';const qm=Array(len).fill('<span class="q-slot">❓</span>').join('');document.getElementById('gbody').innerHTML=`<div style="width:100%;text-align:center"><p style="opacity:.7;margin-bottom:7px;font-size:.86rem">Round ${mgS.round} of ${mgS.total}</p><div class="seq-display" id="sd">Get ready…</div><div id="qmarks" style="display:flex;gap:9px;justify-content:center;margin-bottom:9px">${qm}</div><div class="seq-btns">${sy.map(e=>`<button class="sqb" onclick="sqT('${e}')" disabled>${e}</button>`).join('')}</div><div id="sfb" style="margin-top:11px;min-height:24px;color:#c9b3ff;font-size:.92rem">Watch slowly…</div></div>`;setTimeout(()=>showSeq(mgS.seq),700);}
+function showSeq(seq){let i=0;const sd=document.getElementById('sd'),fb=document.getElementById('sfb');function nx(){if(!sd||!fb)return;if(i>=seq.length){sd.innerHTML=Array(seq.length).fill('<span class="q-slot">❓</span>').join('');fb.textContent='Now tap it!';mgS.phase='input';document.querySelectorAll('.sqb').forEach(b=>b.disabled=false);return;}sd.textContent=seq[i++];setTimeout(()=>{if(document.getElementById('sd'))sd.textContent='';setTimeout(nx,300);},1000);}nx();}
+function sqT(e){if(mgS.phase!=='input')return;mgS.player.push(e);const p=mgS.player.length-1,fb=document.getElementById('sfb');if(e!==mgS.seq[p]){fb.textContent='Try again!';mgS.player=[];document.querySelectorAll('.sqb').forEach(b=>b.disabled=true);setTimeout(()=>{document.getElementById('gbody').innerHTML=`<div style="text-align:center"><p style="margin-bottom:11px">Try Round ${mgS.round} again!</p><button class="gb start-btn" onclick="startSeqR()">Restart ▶️</button></div>`;},700);return;}const sd=document.getElementById('sd');if(sd)sd.innerHTML=mgS.seq.slice(0,mgS.player.length).map(()=>'✅').concat(mgS.seq.slice(mgS.player.length).map(()=>'<span class="q-slot">❓</span>')).join(' ');if(mgS.player.length===mgS.seq.length){if(mgS.round<mgS.total){mgS.round++;document.querySelectorAll('.sqb').forEach(b=>b.disabled=true);setTimeout(()=>{document.getElementById('gbody').innerHTML=`<div style="text-align:center"><div style="font-size:3rem;margin-bottom:8px">⭐</div><p style="margin-bottom:10px">Next Round ${mgS.round}!</p><button class="gb start-btn" onclick="startSeqR()">Start Round ${mgS.round} ▶️</button></div>`;},700);}else{earnBadge(curZ);celebrate('Thinking Power UNLOCKED! 🧩');}}}
+function bldMem(){const p=['🎸','🎺','🥁','🎹'],d=sh(p.concat(p));mgS={fl:[],mat:0,busy:false};document.getElementById('gbody').innerHTML=`<div class="mgrid">${d.map((e,j)=>`<div class="mc face-down" id="mc${j}" data-e="${e}" onclick="flipC(${j})"><span class="cf">${e}</span></div>`).join('')}</div>`;}
+function flipC(i){if(mgS.busy)return;const el=document.getElementById('mc'+i);if(!el||el.classList.contains('matched')||!el.classList.contains('face-down'))return;el.classList.remove('face-down');el.classList.add('flipped');mgS.fl.push({e:el.dataset.e,el});if(mgS.fl.length===2){mgS.busy=true;const[a,b]=mgS.fl;if(a.e===b.e){a.el.classList.replace('flipped','matched');b.el.classList.replace('flipped','matched');mgS.mat+=2;mgS.fl=[];mgS.busy=false;if(mgS.mat===8){earnBadge(curZ);celebrate('Memory Power UNLOCKED! 🎵');}}else setTimeout(()=>{a.el.classList.remove('flipped');a.el.classList.add('face-down');b.el.classList.remove('flipped');b.el.classList.add('face-down');mgS.fl=[];mgS.busy=false;},850);}}
+function bldTch(){const its=[{e:'🧸',l:'Teddy Bear',a:'soft'},{e:'🪨',l:'Rock',a:'rough'},{e:'🌸',l:'Petal',a:'soft'},{e:'🌵',l:'Cactus',a:'rough'},{e:'🐱',l:'Kitten',a:'soft'}];mgS={qs:sh(its),idx:0,cor:0};shTQ();}
+function shTQ(){if(mgS.idx>=mgS.qs.length){document.getElementById('gbody').innerHTML=`<div class="mg-result win">🎉 ${mgS.cor}/5 correct!</div>`;earnBadge(curZ);celebrate('Touch Power UNLOCKED! ✋');return;}const it=mgS.qs[mgS.idx];document.getElementById('gbody').innerHTML=`<div class="touch-emoji">${it.e}</div><p style="font-size:1.05rem;margin-bottom:14px">How does <b>${it.l}</b> feel?</p><div class="tbtns"><button class="tbtn" onclick="tA('soft')">🤗 Soft</button><button class="tbtn" onclick="tA('rough')">🪨 Rough</button></div><div id="tfb" style="margin-top:11px;min-height:22px;font-size:.92rem"></div>`;}
+function tA(a){const it=mgS.qs[mgS.idx],fb=document.getElementById('tfb');document.querySelectorAll('.tbtn').forEach(b=>b.disabled=true);if(a===it.a){mgS.cor++;fb.innerHTML="<span style='color:#b0ffbb'>✅ Correct!</span>";}else fb.innerHTML=`<span style='color:#ffb0b0'>❌ It's ${it.a}!</span>`;mgS.idx++;setTimeout(shTQ,950);}
+function bldSpy(){const pool=['🍎','🌟','🐸','🎈','🦋','🍕','🌙','🚀','🌸','🐶','🦄','🌈','🎀','🐠','🍦'],rds=[{f:'🌟',l:'star ⭐'},{f:'🦋',l:'butterfly 🦋'},{f:'🚀',l:'rocket 🚀'}];mgS={rds,pool,ri:0};shSpy();}
+function shSpy(){if(mgS.ri>=mgS.rds.length){document.getElementById('gbody').innerHTML=`<div class="mg-result win">🌈 Amazing eyes!</div>`;earnBadge(curZ);celebrate('Seeing Power UNLOCKED! 👁️');return;}const r=mgS.rds[mgS.ri],arr=sh(mgS.pool.slice());document.getElementById('gbody').innerHTML=`<p style="font-size:1.05rem;margin-bottom:11px">Find <span style="font-size:1.7rem">${r.f}</span> — ${r.l}!</p><div class="spygrid">${arr.map(e=>`<div class="si" data-e="${e}" onclick="spyT(this,'${r.f}')">${e}</div>`).join('')}</div><div id="sfb2" style="margin-top:9px;font-size:.9rem;min-height:20px"></div>`;}
+function spyT(el,f){if(el.dataset.e===f){el.classList.add('found');document.getElementById('sfb2').innerHTML="<span style='color:#b0ffbb'>✅ Found it!</span>";mgS.ri++;setTimeout(shSpy,800);}else{el.classList.add('miss');setTimeout(()=>el.classList.remove('miss'),440);document.getElementById('sfb2').textContent='Keep looking! 🔍';}}
+function bldBal(){document.getElementById('gbody').innerHTML=`<div style="text-align:center;width:100%"><div id="bchar" style="font-size:4.5rem;margin-bottom:9px">🤸</div><div id="bbar"><div id="bfill"></div></div><div style="display:flex;justify-content:space-between;max-width:330px;margin:4px auto 11px;font-size:.73rem;opacity:.6"><span>⬅️ Left</span><span style="color:#50dc98;font-weight:900">✅ CENTER</span><span>Right ➡️</span></div><button class="gb" id="bstart" onclick="balS()">Start ▶️</button><button class="gb" id="btap" onclick="balT()" style="display:none;font-size:1.5rem;padding:13px 34px;border-color:#50dc98;background:rgba(80,220,152,.14)">👆 TAP!</button><p style="font-size:.8rem;opacity:.6;margin-top:11px">Tap when bar is in the GREEN zone! (5 tries)</p><div id="bsc" style="margin-top:9px;min-height:20px;font-size:.9rem"></div></div>`;mgS={pos:50,dir:1,cor:0,tot:0};}
+function balS(){document.getElementById('bstart').style.display='none';document.getElementById('btap').style.display='inline-block';mgS.iv=setInterval(()=>{if(!document.getElementById('bfill')){clearInterval(mgS.iv);return;}mgS.pos+=mgS.dir*3;if(mgS.pos>=100||mgS.pos<=0)mgS.dir*=-1;document.getElementById('bfill').style.left=mgS.pos+'%';document.getElementById('bchar').textContent=Math.abs(mgS.pos-50)<15?'🤸':(mgS.pos<35?'😰':'😱');},55);}
+function balT(){mgS.tot++;const good=Math.abs(mgS.pos-50)<24;if(good)mgS.cor++;const sc=document.getElementById('bsc');sc.textContent=`✅ ${mgS.cor}/${mgS.tot}`;if(mgS.tot>=5){clearInterval(mgS.iv);document.getElementById('btap').disabled=true;const w=mgS.cor>=3;setTimeout(()=>sc.innerHTML=`<div class="mg-result ${w?'win':'lose'}">${w?'🎉 Amazing balance!':'💪 Keep practising!'}</div>`,250);earnBadge(curZ);if(w)celebrate('Balance Power UNLOCKED! ⚡');}}
+
+function openLab(){const h=[{ico:'😴',n:'Sleep',t:'Rest & grow'},{ico:'💧',n:'Water',t:'Helps focus'},{ico:'🍎',n:'Healthy Food',t:'Fuels brain'},{ico:'🏃',n:'Move',t:'Wakes brain'},{ico:'🌬️',n:'Breathing',t:'Calms brain'},{ico:'⏰',n:'Breaks',t:'Screen rest'}];document.getElementById('habGrid').innerHTML=h.map(x=>`<div class="hab-card"><div class="hico">${x.ico}</div><div class="hname">${x.n}</div><div class="htxt">${x.t}</div></div>`).join('');labScore=0;labDone=false;buildFeed();document.getElementById('labOv').classList.add('on');document.body.style.overflow='hidden';}
+function closeLab(){document.getElementById('labOv').classList.remove('on');document.body.style.overflow='';}
+function buildFeed(){const items=sh(FEED.slice());document.getElementById('labface').textContent='😐';document.getElementById('hmfill').style.width='0%';document.getElementById('labscore').textContent='Pick healthy choices!';document.getElementById('labfb').textContent='';document.getElementById('feedItems').innerHTML=items.map(it=>`<div class="fi" data-g="${it.g}" onclick="feedT(this)">${it.e}</div>`).join('');}
+function feedT(el){if(el.classList.contains('used'))return;el.classList.add('used');const g=el.dataset.g==='true';if(g){labScore++;el.classList.add('good');document.getElementById('labfb').textContent='🌟 Great choice!';}else{el.classList.add('bad');document.getElementById('labfb').textContent='😅 Try a healthier one!';}const pct=Math.min(100,Math.round(labScore/8*100));document.getElementById('hmfill').style.width=pct+'%';document.getElementById('labface').textContent=pct>=80?'🤩':pct>=50?'😊':pct>=25?'😐':'😕';document.getElementById('labscore').textContent=`Healthy choices: ${labScore}/8`;if(labScore>=8&&!labDone){labDone=true;celebrate('Healthy Brain Hero! 🏆');}}
+
+function celebrate(msg=''){if(msg){const el=document.getElementById('celeb').firstElementChild;if(el){el.style.cssText='font-size:clamp(1.2rem,4vw,2rem);color:#FFE66D;text-shadow:0 0 20px #FF6BB5;text-align:center;padding:20px 26px;background:rgba(5,0,20,.92);border-radius:22px;border:3px solid #FFE66D;pointer-events:auto;line-height:1.5';el.innerHTML=msg;}}const c=document.getElementById('celeb');c.classList.add('on');const cols=['#FF8C42','#9B59B6','#1ABC9C','#E74C3C','#F1C40F','#FF6BB5','#4FC3F7'];for(let i=0;i<90;i++){const p=document.createElement('div');p.className='cp';p.style.cssText=`left:${Math.random()*100}vw;background:${cols[i%cols.length]};top:-12px;width:${8+Math.random()*9}px;height:${8+Math.random()*9}px;animation-duration:${2+Math.random()*2.5}s;animation-delay:${Math.random()*.9}s`;c.appendChild(p);}setTimeout(()=>{c.classList.remove('on');c.querySelectorAll('.cp').forEach(p=>p.remove());},3500);}
+function sh(a){const b=a.slice();for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+
+buildScenarios();goHome();
+</script>
+</body></html>
