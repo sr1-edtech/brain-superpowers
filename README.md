@@ -1,3 +1,3 @@
-#Brain Superpowers Game
+# Brain Superpowers Game
 
 [Click me]
